@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Personale</title>
+<meta name="theme-color" content="#111827">
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f3f4f6;
+  color:#111827;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:900px;margin:auto;padding:16px}
+header{
+  background:#111827;
+  color:#fff;
+  border-radius:20px;
+  padding:20px;
+  margin-bottom:14px;
+}
+header h1{margin:0 0 6px;font-size:26px}
+header p{margin:0;color:#d1d5db}
+.nav{
+  display:flex;
+  gap:8px;
+  margin-bottom:14px;
+  overflow:auto;
+}
+.nav button{
+  border:0;
+  border-radius:12px;
+  padding:11px 15px;
+  background:#e5e7eb;
+  color:#374151;
+  white-space:nowrap;
+}
+.nav button.active{
+  background:#111827;
+  color:#fff;
+}
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 3px 12px rgba(0,0,0,.06);
+}
+.card h2,.card h3{margin:0 0 14px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.field label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  margin-bottom:6px;
+  color:#4b5563;
+}
+input,select,textarea{
+  width:100%;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  padding:11px;
+  background:#fff;
+  color:#111827;
+}
+textarea{min-height:80px;resize:vertical}
+.monthbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:14px;
+}
+.monthbar button{
+  border:0;
+  background:#e5e7eb;
+  border-radius:10px;
+  padding:9px 13px;
+}
+.monthtitle{
+  text-align:center;
+  font-weight:800;
+  text-transform:capitalize;
+}
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:10px 13px;
+  background:#111827;
+  color:#fff;
+}
+.btn.secondary{background:#e5e7eb;color:#111827}
+.btn.danger{background:#dc2626}
+.btn.small{padding:7px 10px;font-size:13px}
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.summary{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.summary .box{
+  background:#f9fafb;
+  border-radius:14px;
+  padding:13px;
+}
+.summary .label{
+  color:#6b7280;
+  font-size:12px;
+}
+.summary .value{
+  font-size:20px;
+  font-weight:800;
+  margin-top:4px;
+}
+.summary .positive{color:#15803d}
+.summary .negative{color:#b91c1c}
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  padding:11px 0;
+  border-bottom:1px solid #e5e7eb;
+}
+.row:last-child{border-bottom:0}
+.row-main{min-width:0}
+.row-title{font-weight:700}
+.row-sub{font-size:12px;color:#6b7280;margin-top:3px}
+.row-right{text-align:right;white-space:nowrap}
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  background:#e5e7eb;
+}
+.badge.paid{background:#dcfce7;color:#166534}
+.badge.unpaid{background:#fee2e2;color:#991b1b}
+.debt{
+  border:1px solid #e5e7eb;
+  border-radius:15px;
+  padding:14px;
+  margin-bottom:12px;
+}
+.debt-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+.debt-name{font-size:17px;font-weight:800}
+.debt-residual{
+  font-size:21px;
+  font-weight:800;
+  margin:5px 0 12px;
+}
+.debt-actions{display:flex;gap:7px;flex-wrap:wrap}
+.rate{
+  background:#f9fafb;
+  border-radius:12px;
+  padding:11px;
+  margin-top:8px;
+}
+.rate-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.muted{color:#6b7280}
+.small{font-size:12px}
+hr{border:0;border-top:1px solid #e5e7eb;margin:16px 0}
+.hidden{display:none!important}
+.empty{
+  padding:20px;
+  text-align:center;
+  color:#6b7280;
+}
+.notice{
+  background:#eff6ff;
+  color:#1e40af;
+  border-radius:12px;
+  padding:12px;
+  font-size:13px;
+  margin-bottom:12px;
+}
+.danger-box{
+  background:#fef2f2;
+  color:#991b1b;
+  border-radius:12px;
+  padding:12px;
+  font-size:13px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+th,td{
+  padding:9px 6px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:left;
+}
+th{font-size:12px;color:#6b7280}
+.right{text-align:right}
+@media(max-width:600px){
+  .app{padding:10px}
+  .grid,.summary{grid-template-columns:1fr}
+  .row{align-items:flex-start}
+  .row-right{white-space:normal}
+  table{font-size:12px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+  <h1>Budget Personale</h1>
+  <p>Gestisci stipendio, debiti, pagamenti e spese personali.</p>
+</header>
+
+<div class="nav">
+  <button id="navBudget" class="active" onclick="showTab('budget')">Budget</button>
+  <button id="navDebiti" onclick="showTab('debiti')">Debiti</button>
+  <button id="navStorico" onclick="showTab('storico')">Storico</button>
+</div>
+
+<!-- BUDGET -->
+<section id="tabBudget">
+
+  <div class="card">
+    <div class="monthbar">
+      <button onclick="changeMonth(-1)">‹</button>
+      <div id="monthTitle" class="monthtitle"></div>
+      <button onclick="changeMonth(1)">›</button>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label>Stipendio ricevuto</label>
+        <input id="salary" type="number" min="0" step="0.01" placeholder="0,00">
+      </div>
+
+      <div class="field">
+        <label>Budget Casa</label>
+        <input type="number" value="600" disabled>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="saveMonth()">Salva mese</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Spese variabili</h2>
+
+    <div class="grid">
+      <div class="field">
+        <label>Medicine Bella</label>
+        <input id="bella" type="number" min="0" step="0.01" placeholder="0,00">
+      </div>
+
+      <div class="field">
+        <label>Medicine Bea</label>
+        <input id="bea" type="number" min="0" step="0.01" placeholder="0,00">
+      </div>
+
+      <div class="field">
+        <label>Alimenti Casa</label>
+        <input id="food" type="number" min="0" step="0.01" placeholder="0,00">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="saveMonth()">Salva spese</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Riepilogo del mese</h2>
+
+    <div class="summary">
+      <div class="box">
+        <div class="label">Stipendio</div>
+        <div id="sumSalary" class="value">€ 0,00</div>
+      </div>
+
+      <div class="box">
+        <div class="label">Budget Casa</div>
+        <div id="sumCasa" class="value negative">− € 600,00</div>
+      </div>
+
+      <div class="box">
+        <div class="label">Pagamenti debiti</div>
+        <div id="sumDebts" class="value negative">− € 0,00</div>
+      </div>
+
+      <div class="box">
+        <div class="label">Spese variabili</div>
+        <div id="sumExpenses" class="value negative">− € 0,00</div>
+      </div>
+
+      <div class="box" style="grid-column:1/-1">
+        <div class="label">Disponibile personale</div>
+        <div id="sumRemaining" class="value positive">€ 0,00</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Pagamenti debiti effettuati nel mese</h2>
+    <div id="monthDebtPayments"></div>
+  </div>
+
+</section>
+
+<!-- DEBITI -->
+<section id="tabDebiti" class="hidden">
+
+  <div class="card">
+    <h2>Debiti personali</h2>
+    <div class="notice">
+      Il residuo è modificabile. I pagamenti vengono registrati con la data reale e restano nello storico.
+    </div>
+  </div>
+
+  <div id="debtsContainer"></div>
+
+</section>
+
+<!-- STORICO -->
+<section id="tabStorico" class="hidden">
+
+  <div class="card">
+    <h2>Storico mensile</h2>
+    <div id="monthlyHistory"></div>
+  </div>
+
+  <div class="card">
+    <h2>Storico Alimenti Casa</h2>
+    <div id="foodHistory"></div>
+  </div>
+
+  <div class="card">
+    <h2>Gestione dati</h2>
+    <div class="actions">
+      <button class="btn secondary" onclick="exportData()">Esporta dati</button>
+      <button class="btn secondary" onclick="document.getElementById('importFile').click()">Importa dati</button>
+      <button class="btn danger" onclick="resetData()">Cancella tutti i dati</button>
+    </div>
+    <input id="importFile" type="file" accept=".json" class="hidden" onchange="importData(event)">
+  </div>
+
+</section>
+
+</div>
+
+<!-- MODALE PAGAMENTO -->
+<div id="paymentModal" class="hidden" style="
+position:fixed;inset:0;background:rgba(0,0,0,.5);
+padding:20px;z-index:20;overflow:auto;">
+  <div class="card" style="max-width:520px;margin:40px auto">
+    <h2 id="paymentModalTitle">Nuovo pagamento</h2>
+
+    <div class="grid">
+      <div class="field">
+        <label>Data pagamento</label>
+        <input id="paymentDate" type="date">
+      </div>
+
+      <div class="field">
+        <label>Importo</label>
+        <input id="paymentAmount" type="number" min="0" step="0.01">
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:12px">
+      <label>Nota</label>
+      <input id="paymentNote" type="text" placeholder="Facoltativo">
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="savePayment()">Salva pagamento</button>
+      <button class="btn secondary" onclick="closePaymentModal()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE SORIS -->
+<div id="rateModal" class="hidden" style="
+position:fixed;inset:0;background:rgba(0,0,0,.5);
+padding:20px;z-index:20;overflow:auto;">
+  <div class="card" style="max-width:600px;margin:40px auto">
+    <h2 id="rateModalTitle">Rata SORIS</h2>
+
+    <div class="grid">
+      <div class="field">
+        <label>Scadenza</label>
+        <input id="rateDue" type="date">
+      </div>
+
+      <div class="field">
+        <label>Importo rata</label>
+        <input id="rateAmount" type="number" min="0" step="0.01">
+      </div>
+
+      <div class="field">
+        <label>Quota capitale</label>
+        <input id="rateCapital" type="number" min="0" step="0.01">
+      </div>
+
+      <div class="field">
+        <label>Quota interessi</label>
+        <input id="rateInterest" type="number" min="0" step="0.01">
+      </div>
+
+      <div class="field">
+        <label>Oneri / spese</label>
+        <input id="rateFees" type="number" min="0" step="0.01">
+      </div>
+
+      <div class="field">
+        <label>Debito residuo dopo la rata</label>
+        <input id="rateResidual" type="number" min="0" step="0.01">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="saveRate()">Salva rata</button>
+      <button class="btn secondary" onclick="closeRateModal()">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "budget_personale_v2";
+
+const DEFAULT_DATA = {
+  version: 2,
+  currentMonth: getMonthKey(new Date()),
+  months: {},
+  debts: {
+    soris: {
+      id:"soris",
+      name:"SORIS",
+      type:"soris",
+      residual:0,
+      payments:[],
+      plans:[]
+    },
+    vet: {
+      id:"vet",
+      name:"Veterinario",
+      type:"free",
+      residual:1820,
+      payments:[]
+    },
+    intesaFin: {
+      id:"intesaFin",
+      name:"Intesa Sanpaolo – Finanziamento",
+      type:"free",
+      residual:0,
+      payments:[]
+    },
+    intesaFido: {
+      id:"intesaFido",
+      name:"Intesa Sanpaolo – Fido",
+      type:"free",
+      residual:0,
+      payments:[]
+    },
+    compass: {
+      id:"compass",
+      name:"Compass – Finanziamento",
+      type:"free",
+      residual:0,
+      payments:[]
+    },
+    agenzia: {
+      id:"agenzia",
+      name:"Agenzia delle Entrate",
+      type:"free",
+      residual:0,
+      payments:[]
+    }
+  }
+};
+
+let data = loadData();
+let paymentContext = null;
+let rateContext = null;
+
+function clone(obj){
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return clone(DEFAULT_DATA);
+
+    const parsed = JSON.parse(raw);
+
+    const merged = clone(DEFAULT_DATA);
+
+    if(parsed.currentMonth) merged.currentMonth = parsed.currentMonth;
+    if(parsed.months) merged.months = parsed.months;
+
+    if(parsed.debts){
+      Object.keys(merged.debts).forEach(id=>{
+        if(parsed.debts[id]){
+          merged.debts[id] = {
+            ...merged.debts[id],
+            ...parsed.debts[id],
+            payments:Array.isArray(parsed.debts[id].payments)
+              ? parsed.debts[id].payments
+              : [],
+            plans:Array.isArray(parsed.debts[id].plans)
+              ? parsed.debts[id].plans
+              : []
+          };
+        }
+      });
+    }
+
+    return merged;
+  }catch(e){
+    return clone(DEFAULT_DATA);
+  }
+}
+
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getMonthKey(date){
+  const d = new Date(date);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+}
+
+function parseMonth(key){
+  const [y,m] = key.split("-").map(Number);
+  return new Date(y,m-1,1);
+}
+
+function formatMonth(key){
+  return parseMonth(key).toLocaleDateString("it-IT",{
+    month:"long",
+    year:"numeric"
+  });
+}
+
+function formatDate(date){
+  if(!date) return "—";
+  const d = new Date(date+"T00:00:00");
+  if(Number.isNaN(d.getTime())) return date;
+  return d.toLocaleDateString("it-IT");
+}
+
+function n(value){
+  const x = Number(value);
+  return Number.isFinite(x) ? x : 0;
+}
+
+function money(value){
+  return n(value).toLocaleString("it-IT",{
+    style:"currency",
+    currency:"EUR"
+  });
+}
+
+function signedMoney(value){
+  const x=n(value);
+  if(x<0) return "− "+money(Math.abs(x));
+  if(x>0) return "+ "+money(x);
+  return money(0);
+}
+
+function todayISO(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function ensureMonth(key){
+  if(!data.months[key]){
+    data.months[key]={
+      salary:0,
+      bella:0,
+      bea:0,
+      food:0
+    };
+  }
+
+  return data.months[key];
+}
+
+function showTab(tab){
+  document.getElementById("tabBudget").classList.toggle("hidden",tab!=="budget");
+  document.getElementById("tabDebiti").classList.toggle("hidden",tab!=="debiti");
+  document.getElementById("tabStorico").classList.toggle("hidden",tab!=="storico");
+
+  document.getElementById("navBudget").classList.toggle("active",tab==="budget");
+  document.getElementById("navDebiti").classList.toggle("active",tab==="debiti");
+  document.getElementById("navStorico").classList.toggle("active",tab==="storico");
+
+  if(tab==="budget") renderBudget();
+  if(tab==="debiti") renderDebts();
+  if(tab==="storico") renderHistory();
+}
+
+function changeMonth(offset){
+  const d=parseMonth(data.currentMonth);
+  d.setMonth(d.getMonth()+offset);
+  data.currentMonth=getMonthKey(d);
+  saveData();
+  renderBudget();
+}
+
+function renderBudget(){
+  const month=ensureMonth(data.currentMonth);
+
+  document.getElementById("monthTitle").textContent=formatMonth(data.currentMonth);
+
+  document.getElementById("salary").value=month.salary || "";
+  document.getElementById("bella").value=month.bella || "";
+  document.getElementById("bea").value=month.bea || "";
+  document.getElementById("food").value=month.food || "";
+
+  const debtPayments=getPaymentsForMonth(data.currentMonth);
+
+  const debtTotal=debtPayments.reduce((sum,p)=>sum+n(p.amount),0);
+  const expenses=n(month.bella)+n(month.bea)+n(month.food);
+
+  const remaining=n(month.salary)-600-debtTotal-expenses;
+
+  document.getElementById("sumSalary").textContent=money(month.salary);
+  document.getElementById("sumCasa").textContent="− "+money(600);
+  document.getElementById("sumDebts").textContent="− "+money(debtTotal);
+  document.getElementById("sumExpenses").textContent="− "+money(expenses);
+
+  const remainingEl=document.getElementById("sumRemaining");
+  remainingEl.textContent=money(remaining);
+  remainingEl.className="value "+(remaining>=0?"positive":"negative");
+
+  const container=document.getElementById("monthDebtPayments");
+
+  if(!debtPayments.length){
+    container.innerHTML='<div class="empty">Nessun pagamento di debiti registrato in questo mese.</div>';
+    return;
+  }
+
+  container.innerHTML=debtPayments
+    .sort((a,b)=>a.date.localeCompare(b.date))
+    .map(p=>`
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">${escapeHTML(p.debtName)}</div>
+          <div class="row-sub">${formatDate(p.date)}${p.note ? " · "+escapeHTML(p.note) : ""}</div>
+        </div>
+        <div class="row-right">
+          <strong>${money(p.amount)}</strong>
+        </div>
+      </div>
+    `).join("");
+}
+
+function saveMonth(){
+  const month=ensureMonth(data.currentMonth);
+
+  month.salary=Math.max(0,n(document.getElementById("salary").value));
+  month.bella=Math.max(0,n(document.getElementById("bella").value));
+  month.bea=Math.max(0,n(document.getElementById("bea").value));
+  month.food=Math.max(0,n(document.getElementById("food").value));
+
+  saveData();
+  renderBudget();
+  alert("Mese salvato.");
+}
+
+function getPaymentsForMonth(monthKey){
+  const result=[];
+
+  Object.values(data.debts).forEach(debt=>{
+    if(debt.type==="soris"){
+      (debt.plans||[]).forEach(plan=>{
+        (plan.rates||[]).forEach(rate=>{
+          if(rate.paid && rate.paidDate && getMonthKey(rate.paidDate)===monthKey){
+            result.push({
+              id:rate.id,
+              debtId:debt.id,
+              debtName:debt.name+" – "+plan.name,
+              amount:n(rate.amount),
+              date:rate.paidDate,
+              note:"Rata SORIS"
+            });
+          }
+        });
+      });
+    }else{
+      (debt.payments||[]).forEach(p=>{
+        if(getMonthKey(p.date)===monthKey){
+          result.push({
+            ...p,
+            debtId:debt.id,
+            debtName:debt.name
+          });
+        }
+      });
+    }
+  });
+
+  return result;
+}
+
+function renderDebts(){
+  const container=document.getElementById("debtsContainer");
+
+  container.innerHTML=Object.values(data.debts).map(debt=>{
+    if(debt.type==="soris") return renderSoris(debt);
+    return renderFreeDebt(debt);
+  }).join("");
+}
+
+function calculatedFreeResidual(debt){
+  const payments=(debt.payments||[]).reduce((s,p)=>s+n(p.amount),0);
+  return Math.max(0,n(debt.residual)-payments);
+}
+
+function renderFreeDebt(debt){
+  const residual=calculatedFreeResidual(debt);
+
+  const payments=(debt.payments||[])
+    .slice()
+    .sort((a,b)=>b.date.localeCompare(a.date));
+
+  return `
+  <div class="debt">
+    <div class="debt-head">
+      <div>
+        <div class="debt-name">${escapeHTML(debt.name)}</div>
+        <div class="small muted">Debito libero: inserisci il residuo quando lo conosci.</div>
+      </div>
+      <div class="right">
+        <div class="small muted">Residuo</div>
+        <div class="debt-residual">${money(residual)}</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label>Debito residuo di riferimento</label>
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          value="${n(debt.residual)}"
+          onchange="updateDebtResidual('${debt.id}',this.value)"
+        >
+      </div>
+    </div>
+
+    <div class="debt-actions">
+      <button class="btn small" onclick="openPaymentModal('${debt.id}')">＋ Pagamento</button>
+    </div>
+
+    <hr>
+
+    <h3>Pagamenti</h3>
+
+    ${
+      payments.length
+      ? payments.map(p=>`
+        <div class="row">
+          <div class="row-main">
+            <div class="row-title">${money(p.amount)}</div>
+            <div class="row-sub">
+              ${formatDate(p.date)}
+              ${p.note ? " · "+escapeHTML(p.note) : ""}
+            </div>
+          </div>
+          <div class="row-right">
+            <button class="btn danger small" onclick="deletePayment('${debt.id}','${p.id}')">Elimina</button>
+          </div>
+        </div>
+      `).join("")
+      : '<div class="empty">Nessun pagamento registrato.</div>'
+    }
+  </div>
+  `;
+}
+
+function updateDebtResidual(debtId,value){
+  const debt=data.debts[debtId];
+  if(!debt) return;
+
+  debt.residual=Math.max(0,n(value));
+  saveData();
+  renderDebts();
+}
+
+function openPaymentModal(debtId){
+  paymentContext={
+    debtId,
+    paymentId:null
+  };
+
+  document.getElementById("paymentModalTitle").textContent=
+    "Nuovo pagamento – "+data.debts[debtId].name;
+
+  document.getElementById("paymentDate").value=todayISO();
+  document.getElementById("paymentAmount").value="";
+  document.getElementById("paymentNote").value="";
+
+  document.getElementById("paymentModal").classList.remove("hidden");
+}
+
+function closePaymentModal(){
+  paymentContext=null;
+  document.getElementById("paymentModal").classList.add("hidden");
+}
+
+function savePayment(){
+  if(!paymentContext) return;
+
+  const debt=data.debts[paymentContext.debtId];
+
+  const date=document.getElementById("paymentDate").value;
+  const amount=n(document.getElementById("paymentAmount").value);
+  const note=document.getElementById("paymentNote").value.trim();
+
+  if(!date){
+    alert("Inserisci la data del pagamento.");
+    return;
+  }
+
+  if(amount<=0){
+    alert("Inserisci un importo valido.");
+    return;
+  }
+
+  debt.payments=Array.isArray(debt.payments)?debt.payments:[];
+
+  debt.payments.push({
+    id:crypto.randomUUID(),
+    date,
+    amount,
+    note
+  });
+
+  saveData();
+  closePaymentModal();
+  renderDebts();
+  renderBudget();
+  renderHistory();
+}
+
+function deletePayment(debtId,paymentId){
+  const debt=data.debts[debtId];
+  if(!debt) return;
+
+  if(!confirm("Vuoi eliminare questo pagamento?")) return;
+
+  debt.payments=(debt.payments||[]).filter(p=>p.id!==paymentId);
+
+  saveData();
+  renderDebts();
+  renderBudget();
+  renderHistory();
+}
+
+function renderSoris(debt){
+  const plans=Array.isArray(debt.plans)?debt.plans:[];
+
+  const allRates=plans.flatMap(plan=>
+    (plan.rates||[]).map(rate=>({
+      ...rate,
+      planName:plan.name
+    }))
+  );
+
+  const paidTotal=allRates
+    .filter(r=>r.paid)
+    .reduce((s,r)=>s+n(r.amount),0);
+
+  const activePlan=plans.find(p=>p.active) || plans[plans.length-1];
+
+  return `
+  <div class="debt">
+    <div class="debt-head">
+      <div>
+        <div class="debt-name">SORIS</div>
+        <div class="small muted">
+          Rateizzazioni modificabili e pagamenti registrati con la data effettiva.
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="small muted">Residuo impostato</div>
+        <div class="debt-residual">${money(n(debt.residual))}</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label>Debito residuo attuale</label>
+        <input
+          type="number"
+          min="0"
+          step="0.01"
+          value="${n(debt.residual)}"
+          onchange="updateDebtResidual('soris',this.value)"
+        >
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn small" onclick="addSorisPlan()">＋ Nuova rateizzazione</button>
+    </div>
+
+    ${
+      plans.length
+      ? plans.map(plan=>renderSorisPlan(debt,plan)).join("")
+      : '<div class="empty">Nessuna rateizzazione inserita.</div>'
+    }
+
+    ${
+      paidTotal>0
+      ? `<div class="notice" style="margin-top:12px">
+          Totale rate SORIS pagate registrate: <strong>${money(paidTotal)}</strong>
+        </div>`
+      : ""
+    }
+  </div>
+  `;
+}
+
+function renderSorisPlan(debt,plan){
+  const rates=(plan.rates||[]).slice().sort((a,b)=>
+    a.due.localeCompare(b.due)
+  );
+
+  return `
+  <div class="rate" style="margin-top:14px">
+    <div class="rate-top">
+      <div>
+        <strong>${escapeHTML(plan.name)}</strong>
+        ${plan.active
+          ? '<span class="badge paid">ATTIVA</span>'
+          : '<span class="badge">STORICA</span>'
+        }
+      </div>
+
+      <div>
+        <button class="btn secondary small" onclick="editSorisPlan('${plan.id}')">Modifica</button>
+        <button class="btn danger small" onclick="deleteSorisPlan('${plan.id}')">Elimina</button>
+      </div>
+    </div>
+
+    ${
+      rates.length
+      ? rates.map(rate=>`
+        <div class="rate">
+          <div class="rate-top">
+            <div>
+              <div class="row-title">
+                Scadenza ${formatDate(rate.due)}
+              </div>
+              <div class="row-sub">
+                Rata ${money(rate.amount)}
+                ${n(rate.capital)>0 ? " · Capitale "+money(rate.capital) : ""}
+                ${n(rate.interest)>0 ? " · Interessi "+money(rate.interest) : ""}
+                ${n(rate.fees)>0 ? " · Oneri "+money(rate.fees) : ""}
+              </div>
+              ${
+                rate.residualAfter!=="" && rate.residualAfter!=null
+                ? `<div class="row-sub">Residuo dopo rata: ${money(rate.residualAfter)}</div>`
+                : ""
+              }
+              ${
+                rate.paid
+                ? `<div class="row-sub"><strong>Pagata il ${formatDate(rate.paidDate)}</strong></div>`
+                : ""
+              }
+            </div>
+
+            <div class="row-right">
+              ${
+                rate.paid
+                ? '<span class="badge paid">PAGATA</span>'
+                : '<span class="badge unpaid">DA PAGARE</span>'
+              }
+            </div>
+          </div>
+
+          <div class="actions">
+            ${
+              rate.paid
+              ? `<button class="btn secondary small" onclick="markSorisUnpaid('${plan.id}','${rate.id}')">Segna non pagata</button>`
+              : `<button class="btn small" onclick="markSorisPaid('${plan.id}','${rate.id}')">Segna pagata</button>`
+            }
+
+            <button class="btn secondary small" onclick="editSorisRate('${plan.id}','${rate.id}')">Modifica</button>
+            <button class="btn danger small" onclick="deleteSorisRate('${plan.id}','${rate.id}')">Elimina</button>
+          </div>
+        </div>
+      `).join("")
+      : '<div class="empty">Nessuna rata in questa rateizzazione.</div>'
+    }
+
+    <div class="actions">
+      <button class="btn secondary small" onclick="addSorisRate('${plan.id}')">＋ Aggiungi rata</button>
+    </div>
+  </div>
+  `;
+}
+
+function addSorisPlan(){
+  const name=prompt("Nome della nuova rateizzazione:", "Rateizzazione SORIS "+(data.debts.soris.plans.length+1));
+  if(!name) return;
+
+  data.debts.soris.plans.forEach(p=>p.active=false);
+
+  data.debts.soris.plans.push({
+    id:crypto.randomUUID(),
+    name,
+    active:true,
+    rates:[]
+  });
+
+  saveData();
+  renderDebts();
+}
+
+function deleteSorisPlan(planId){
+  const soris=data.debts.soris;
+  const plan=soris.plans.find(p=>p.id===planId);
+  if(!plan) return;
+
+  if(!confirm("Eliminare questa rateizzazione e tutte le sue rate?")) return;
+
+  soris.plans=soris.plans.filter(p=>p.id!==planId);
+
+  saveData();
+  renderDebts();
+  renderBudget();
+  renderHistory();
+}
+
+function editSorisPlan(planId){
+  const soris=data.debts.soris;
+  const plan=soris.plans.find(p=>p.id===planId);
+  if(!plan) return;
+
+  const name=prompt("Nome rateizzazione:",plan.name);
+  if(name===null) return;
+
+  plan.name=name.trim() || plan.name;
+
+  const active=confirm("Questa deve essere la rateizzazione ATTIVA?");
+
+  if(active){
+    soris.plans.forEach(p=>p.active=false);
+    plan.active=true;
+  }
+
+  saveData();
+  renderDebts();
+}
+
+function addSorisRate(planId){
+  rateContext={
+    planId,
+    rateId:null
+  };
+
+  document.getElementById("rateModalTitle").textContent="Nuova rata SORIS";
+
+  document.getElementById("rateDue").value="";
+  document.getElementById("rateAmount").value="";
+  document.getElementById("rateCapital").value="";
+  document.getElementById("rateInterest").value="";
+  document.getElementById("rateFees").value="";
+  document.getElementById("rateResidual").value="";
+
+  document.getElementById("rateModal").classList.remove("hidden");
+}
+
+function editSorisRate(planId,rateId){
+  const plan=data.debts.soris.plans.find(p=>p.id===planId);
+  if(!plan) return;
+
+  const rate=plan.rates.find(r=>r.id===rateId);
+  if(!rate) return;
+
+  rateContext={planId,rateId};
+
+  document.getElementById("rateModalTitle").textContent="Modifica rata SORIS";
+
+  document.getElementById("rateDue").value=rate.due || "";
+  document.getElementById("rateAmount").value=n(rate.amount);
+  document.getElementById("rateCapital").value=n(rate.capital);
+  document.getElementById("rateInterest").value=n(rate.interest);
+  document.getElementById("rateFees").value=n(rate.fees);
+  document.getElementById("rateResidual").value=
+    rate.residualAfter==="" ? "" : n(rate.residualAfter);
+
+  document.getElementById("rateModal").classList.remove("hidden");
+}
+
+function closeRateModal(){
+  rateContext=null;
+  document.getElementById("rateModal").classList.add("hidden");
+}
+
+function saveRate(){
+  if(!rateContext) return;
+
+  const plan=data.debts.soris.plans.find(p=>p.id===rateContext.planId);
+  if(!plan) return;
+
+  const due=document.getElementById("rateDue").value;
+  const amount=n(document.getElementById("rateAmount").value);
+  const capital=n(document.getElementById("rateCapital").value);
+  const interest=n(document.getElementById("rateInterest").value);
+  const fees=n(document.getElementById("rateFees").value);
+  const residual=document.getElementById("rateResidual").value;
+
+  if(!due){
+    alert("Inserisci la scadenza.");
+    return;
+  }
+
+  if(amount<=0){
+    alert("Inserisci un importo rata valido.");
+    return;
+  }
+
+  if(rateContext.rateId){
+    const rate=plan.rates.find(r=>r.id===rateContext.rateId);
+    if(rate){
+      rate.due=due;
+      rate.amount=amount;
+      rate.capital=capital;
+      rate.interest=interest;
+      rate.fees=fees;
+      rate.residualAfter=residual==="" ? "" : n(residual);
+    }
+  }else{
+    plan.rates.push({
+      id:crypto.randomUUID(),
+      due,
+      amount,
+      capital,
+      interest,
+      fees,
+      residualAfter:residual==="" ? "" : n(residual),
+      paid:false,
+      paidDate:""
+    });
+  }
+
+  saveData();
+  closeRateModal();
+  renderDebts();
+  renderBudget();
+  renderHistory();
+}
+
+function deleteSorisRate(planId,rateId){
+  const plan=data.debts.soris.plans.find(p=>p.id===planId);
+  if(!plan) return;
+
+  if(!confirm("Eliminare questa rata?")) return;
+
+  plan.rates=plan.rates.filter(r=>r.id!==rateId);
+
+  saveData();
+  renderDebts();
+  renderBudget();
+  renderHistory();
+}
+
+function markSorisPaid(planId,rateId){
+  const plan=data.debts.soris.plans.find(p=>p.id===planId);
+  if(!plan) return;
+
+  const rate=plan.rates.find(r=>r.id===rateId);
+  if(!rate) return;
+
+  const date=prompt(
+    "Inserisci la data effettiva di pagamento (AAAA-MM-GG):",
+    todayISO()
+  );
+
+  if(!date) return;
+
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)){
+    alert("Data non valida.");
+    return;
+  }
+
+  rate.paid=true;
+  rate.paidDate=date;
+
+  saveData();
+  renderDebts();
+  renderBudget();
+  renderHistory();
+}
+
+function markSorisUnpaid(planId,rateId){
+  const plan=data.debts.soris.plans.find(p=>p.id===planId);
+  if(!plan) return;
+
+  const rate=plan.rates.find(r=>r.id===rateId);
+  if(!rate) return;
+
+  rate.paid=false;
+  rate.paidDate="";
+
+  saveData();
+  renderDebts();
+  renderBudget();
+  renderHistory();
+}
+
+function renderHistory(){
+  renderMonthlyHistory();
+  renderFoodHistory();
+}
+
+function getAllMonths(){
+  const months=new Set(Object.keys(data.months));
+
+  Object.values(data.debts).forEach(debt=>{
+    if(debt.type==="soris"){
+      (debt.plans||[]).forEach(plan=>{
+        (plan.rates||[]).forEach(rate=>{
+          if(rate.paidDate) months.add(getMonthKey(rate.paidDate));
+        });
+      });
+    }else{
+      (debt.payments||[]).forEach(p=>{
+        if(p.date) months.add(getMonthKey(p.date));
+      });
+    }
+  });
+
+  return Array.from(months).sort().reverse();
+}
+
+function renderMonthlyHistory(){
+  const container=document.getElementById("monthlyHistory");
+  const months=getAllMonths();
+
+  if(!months.length){
+    container.innerHTML='<div class="empty">Nessun mese registrato.</div>';
+    return;
+  }
+
+  container.innerHTML=months.map(key=>{
+    const month=ensureMonth(key);
+    const payments=getPaymentsForMonth(key);
+    const debtTotal=payments.reduce((s,p)=>s+n(p.amount),0);
+    const expenses=n(month.bella)+n(month.bea)+n(month.food);
+    const remaining=n(month.salary)-600-debtTotal-expenses;
+
+    return `
+      <div class="card" style="margin:0 0 10px;background:#f9fafb">
+        <div class="row">
+          <div>
+            <div class="row-title">${formatMonth(key)}</div>
+            <div class="row-sub">
+              Stipendio ${money(month.salary)}
+              · Debiti ${money(debtTotal)}
+              · Spese ${money(expenses)}
+            </div>
+          </div>
+          <div class="row-right">
+            <strong>${money(remaining)}</strong>
+          </div>
+        </div>
+
+        ${
+          payments.length
+          ? `<div style="margin-top:8px">
+              ${payments.map(p=>`
+                <div class="row">
+                  <div class="row-main">
+                    <div class="row-title">${escapeHTML(p.debtName)}</div>
+                    <div class="row-sub">${formatDate(p.date)}</div>
+                  </div>
+                  <div class="row-right">${money(p.amount)}</div>
+                </div>
+              `).join("")}
+            </div>`
+          : ""
+        }
+      </div>
+    `;
+  }).join("");
+}
+
+function renderFoodHistory(){
+  const container=document.getElementById("foodHistory");
+
+  const months=Object.keys(data.months)
+    .filter(key=>n(data.months[key].food)>0)
+    .sort()
+    .reverse();
+
+  if(!months.length){
+    container.innerHTML='<div class="empty">Nessuna spesa alimentare registrata.</div>';
+    return;
+  }
+
+  let total=0;
+
+  months.forEach(key=>{
+    total+=n(data.months[key].food);
+  });
+
+  container.innerHTML=`
+    <div class="notice">
+      Totale Alimenti Casa registrato: <strong>${money(total)}</strong>
+    </div>
+
+    ${months.map(key=>`
+      <div class="row">
+        <div class="row-main">
+          <div class="row-title">${formatMonth(key)}</div>
+        </div>
+        <div class="row-right">
+          <strong>${money(data.months[key].food)}</strong>
+        </div>
+      </div>
+    `).join("")}
+  `;
+}
+
+function exportData(){
+  const blob=new Blob(
+    [JSON.stringify(data,null,2)],
+    {type:"application/json"}
+  );
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+
+  a.href=url;
+  a.download="budget-personale-backup.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+}
+
+function importData(event){
+  const file=event.target.files[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+
+  reader.onload=function(){
+    try{
+      const imported=JSON.parse(reader.result);
+
+      if(!imported || typeof imported!=="object"){
+        throw new Error("Formato non valido");
+      }
+
+      if(!imported.debts || !imported.months){
+        throw new Error("Backup non riconosciuto");
+      }
+
+      data=imported;
+
+      saveData();
+
+      alert("Dati importati correttamente.");
+
+      renderBudget();
+      renderDebts();
+      renderHistory();
+
+    }catch(e){
+      alert("Impossibile importare il file.");
+    }
+
+    event.target.value="";
+  };
+
+  reader.readAsText(file);
+}
+
+function resetData(){
+  if(!confirm("ATTENZIONE: verranno cancellati tutti i dati del Budget Personale. Continuare?")){
+    return;
+  }
+
+  if(!confirm("Confermi definitivamente la cancellazione?")){
+    return;
+  }
+
+  localStorage.removeItem(STORAGE_KEY);
+  data=clone(DEFAULT_DATA);
+
+  saveData();
+
+  renderBudget();
+  renderDebts();
+  renderHistory();
+
+  alert("Tutti i dati sono stati cancellati.");
+}
+
+/* ================================
+   INIZIALIZZAZIONE SORIS
+   ================================ */
+
+function initializeSorisIfEmpty(){
+  const soris=data.debts.soris;
+
+  if((soris.plans||[]).length>0) return;
+
+  const rates=[
+    {
+      due:"2026-08-31",
+      capital:53.67,
+      interest:0.67,
+      amount:69.34,
+      residualAfter:432.13,
+      fees:15
+    },
+    {
+      due:"2026-09-30",
+      capital:53.75,
+      interest:0.59,
+      amount:54.34,
+      residualAfter:378.38,
+      fees:0
+    },
+    {
+      due:"2026-10-31",
+      capital:53.82,
+      interest:0.52,
+      amount:54.34,
+      residualAfter:324.56,
+      fees:0
+    },
+    {
+      due:"2026-11-30",
+      capital:53.89,
+      interest:0.45,
+      amount:54.34,
+      residualAfter:270.67,
+      fees:0
+    },
+    {
+      due:"2026-12-31",
+      capital:53.96,
+      interest:0.38,
+      amount:54.34,
+      residualAfter:216.71,
+      fees:0
+    },
+    {
+      due:"2027-01-31",
+      capital:54.03,
+      interest:0.31,
+      amount:54.34,
+      residualAfter:162.68,
+      fees:0
+    },
+    {
+      due:"2027-02-28",
+      capital:54.11,
+      interest:0.23,
+      amount:54.34,
+      residualAfter:108.57,
+      fees:0
+    },
+    {
+      due:"2027-03-31",
+      capital:54.23,
+      interest:0.11,
+      amount:54.34,
+      residualAfter:54.34,
+      fees:0
+    },
+    {
+      due:"2027-04-30",
+      capital:54.34,
+      interest:0,
+      amount:54.34,
+      residualAfter:0,
+      fees:0
+    }
+  ];
+
+  soris.residual=486.47;
+
+  soris.plans=[
+    {
+      id:crypto.randomUUID(),
+      name:"Rateizzazione SORIS attuale",
+      active:true,
+      rates:rates.map(r=>({
+        ...r,
+        id:crypto.randomUUID(),
+        paid:false,
+        paidDate:""
+      }))
+    }
+  ];
+
+  saveData();
+}
+
+/* ================================
+   AVVIO
+   ================================ */
+
+initializeSorisIfEmpty();
+renderBudget();
+renderDebts();
+renderHistory();
+
+</script>
+</body>
+</html>
